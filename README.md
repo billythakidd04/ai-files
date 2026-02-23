@@ -32,11 +32,11 @@ Alternatively, you can symlink specific resources into a single repository's `.g
 
 Agents are specialized AI personas with specific tools and system prompts.
 
-- **[Context7 Expert](agents/context7.agent.md)** (`@context7`)
+- **[Context7 Expert](agents/context7.agent.md)**
   - **Description**: Expert in latest library versions, best practices, and correct syntax using up-to-date documentation via the Context7 MCP server.
   - **Capabilities**: Can resolve library IDs, fetch documentation, and implement solutions using current best practices.
 
-- **[GitHub Actions Expert](agents/github-actions-expert.agent.md)** (`@github-actions-expert`)
+- **[GitHub Actions Expert](agents/github-actions-expert.agent.md)**
   - **Description**: Specialist focused on secure CI/CD workflows, action pinning, OIDC authentication, and supply-chain security.
   - **Capabilities**: Designs and optimizes GitHub Actions workflows, prioritizing security and reliability.
 
@@ -50,7 +50,7 @@ Skills are domain-specific capabilities that the AI can adopt to perform complex
 
 - **[PR Generator](skills/pr-generator/SKILL.md)**
   - **Description**: Automates the creation of detailed Pull Request descriptions.
-  - **Usage**: Analyzes the difference between the current branch and the target, summarizing features, fixes, and extraction ticket references.
+  - **Usage**: Analyzes the difference between the current branch and the target, summarizing features, fixes, and extracting ticket references.
 
 - **[Security Analyst](skills/security-analyst/SKILL.md)**
   - **Description**: Performs security auditing, vulnerability scanning, and secret detection.
@@ -58,7 +58,7 @@ Skills are domain-specific capabilities that the AI can adopt to perform complex
 
 - **[Test Guardian](skills/test-guardian/SKILL.md)**
   - **Description**: Ensures code quality by mandating robust unit and integration tests for new functionality.
-  - **Usage**: detailed verification of new code, suggesting or generating `npm test` or `go test` commands to ensure coverage.
+  - **Usage**: Detailed verification of new code, suggesting or generating `npm test` or `go test` commands to ensure coverage.
 
 - **[Watch Docs](skills/watch-docs/SKILL.md)**
   - **Description**: Keeps documentation in sync with source code changes.

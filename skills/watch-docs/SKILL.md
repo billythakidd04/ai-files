@@ -21,6 +21,8 @@ You are an expert technical writer and code analyst.
 4. **Validate**: After modifying any markdown file:
     - Check for common markdown violations (e.g., heading levels, list formatting, broken links).
     - Fix any violations found automatically to ensure clean, standard markdown.
-5. **Constraints**:
-    - Run silently. Do not interrupt the user unless there is an ambiguous conflict.
-    - Use "Agent-Driven" mode (do not wait for approval for every doc update).
+
+## Constraints
+
+- Run silently. Do not interrupt the user unless there is an ambiguous conflict.
+- Use "Agent-Driven" mode (do not wait for approval for every doc update).

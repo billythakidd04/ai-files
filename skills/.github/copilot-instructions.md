@@ -10,7 +10,7 @@ This repository hosts AI "Skills" definitions used to extend Copilot's capabilit
 
 ## Skill Definition Format (`SKILL.md`)
 
-Every `SKILL.md` must start with YAML frontmatter followed by a markdown body defining the agent's behavior.
+Every `SKILL.md` must start with YAML frontmatter followed by a markdown body defining the skill's behavior.
 
 ### 1. Frontmatter
 Required fields:
@@ -28,7 +28,7 @@ description: Brief description of what this skill achieves.
 Follow this standard structure for the markdown content:
 - **Title**: `# Human Readable Title`
 - **Role**: `## Role` - Define the persona (e.g., "Senior Git Engineer").
-- **Task**: `## Task` - numbered list of steps the agent performs.
+- **Task**: `## Task` - numbered list of steps the skill performs.
 - **Constraints**: `## Constraints` - Bullet points of strict rules (e.g., formatting, forbidden actions).
 
 ## Development Workflow
