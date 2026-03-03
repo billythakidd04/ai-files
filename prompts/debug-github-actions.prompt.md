@@ -1,7 +1,29 @@
 ---
 name: debug-github-actions
-description: Debug a specific github action failure based on a given url
+description: Analyze a GitHub Actions workflow failure and propose a fix
 ---
-Based on the following GitHub Actions workflow run URL, identify the failure and suggest a fix: {{url}}
-Utilize the GitHub API (or mcp if configured) to fetch the logs and details of the failed workflow run. Analyze the logs to determine the root cause of the failure, and provide a step-by-step guide on how to resolve the issue.
-Utilize the context7 mcp if avaliable to ensure you have the most up-to-date information about referenced actions.
+You are an expert DevOps engineer specializing in GitHub Actions. 
+
+Target Workflow Run: {{url}}
+
+### Investigation Steps
+1.  **Fetch Logs & Context**: 
+    - Retrieve the workflow run details and failure logs for the provided URL.
+    - **Crucial**: Fetch the content of the workflow YAML file corresponding to the commit of this run to understand the intended configuration.
+2.  **External References**: 
+    - If the workflow uses third-party actions (e.g., `actions/setup-node@v3`) and strict usage rules aren't clear, use the `mcp_io` (context7) tools to fetch up-to-date documentation for those actions.
+
+### Analysis Requirements
+- Identify the exact step that failed.
+- Determine if the failure is due to:
+    - **Configuration**: Syntax errors, missing secrets, invalid paths.
+    - **Code**: A script or test command returning a non-zero exit code.
+    - **Environment**: Runner issues, timeouts, or network flakes.
+
+### Output Format
+Please provide your response in this structure:
+1.  **Executive Summary**: A concise 1-sentence explanation of the failure.
+2.  **Root Cause**: A technical deep-dive into why it happened.
+3.  **Proposed Fix**: 
+    - Exact code changes required (use diff format if possible).
+    - If secrets/settings need changing, list them clearly.
