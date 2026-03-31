@@ -2,31 +2,28 @@
 
 Custom AI configuration files for GitHub Copilot, including Agents, Skills, and Prompts. These resources are designed to enhance the development workflow by providing specialized AI capabilities.
 
-## Usage
+## Installation
 
-To use these resources across all your projects, you can symlink them into your global Copilot directory (e.g., `~/.copilot`).
+```bash
+git clone https://github.com/william-caffery_webpros/ai-dotfiles-webpros.git ai-dotfiles-webpros
+```
 
-### Installation
+> [!NOTE]
+> This repo also lives as a submodule inside [dot-files](https://github.com/william-caffery_webpros/dot-files). If using dot-files, initialize submodules after cloning:
+>
+> ```bash
+> git submodule update --init
+> ```
 
-1. Clone this repository:
+Then run the [installer](scripts/install.sh) from the repo root to symlink everything into the right places for both the **GitHub Copilot CLI** (`~/.copilot/`) and **VS Code** (user-level profile):
 
-    ```bash
-    git clone https://github.com/william-caffery_webpros/ai-dotfiles-webpros.git ~/workspace/ai-dotfiles-webpros
-    ```
+```bash
+./scripts/install.sh
+```
 
-2. Symlink the desired skills, agents, or prompts to your global configuration:
+All symlinks point back to this repo, so a `git pull` here keeps everything up to date automatically.
 
-    ```bash
-    # Example: Symlink all skills
-    mkdir -p ~/.copilot/skills
-    ln -s ~/workspace/ai-dotfiles-webpros/skills/* ~/.copilot/skills/
-    
-    # Example: Symlink agents
-    mkdir -p ~/.copilot/agents
-    ln -s ~/workspace/ai-dotfiles-webpros/agents/* ~/.copilot/agents/
-    ```
-
-Alternatively, you can symlink specific resources into a single repository's `.github` directory for project-specific usage.
+> **Project-specific usage:** You can also symlink individual files into a repo's `.github/prompts/` or `.github/agents/` directory to scope them to that project only.
 
 ## Agents
 
