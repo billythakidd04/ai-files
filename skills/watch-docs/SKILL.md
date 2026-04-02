@@ -20,6 +20,7 @@ You are an expert technical writer and code analyst.
     - Automatically update the corresponding documentation file to reflect these changes.
 4. **Validate**: After modifying any markdown file:
     - Check for common markdown violations (e.g., heading levels, list formatting, broken links).
+    - Validate via markdownlint.
     - Fix any violations found automatically to ensure clean, standard markdown.
 
 ## Constraints
