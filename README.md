@@ -15,7 +15,7 @@ git clone https://github.com/william-caffery_webpros/ai-dotfiles-webpros.git ai-
 > git submodule update --init
 > ```
 
-Then run the [installer](scripts/install.sh) from the repo root to symlink everything into the right places for both the **GitHub Copilot CLI** (`~/.copilot/`) and **VS Code** (user-level profile):
+Then run the [installer](scripts/install.sh) from the repo root to symlink everything into the right places for the **GitHub Copilot CLI** (`~/.copilot/`), **VS Code** (user-level profile), and **JetBrains IDEs** (like PhpStorm, under `plugins`):
 
 ```bash
 ./scripts/install.sh
