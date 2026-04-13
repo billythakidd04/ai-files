@@ -44,6 +44,7 @@ Before creating or modifying workflows:
 - Pin to specific versions for stability
 - Use major version tags (`@v4`) for balance of security and maintenance
 - Consider full commit SHA for maximum security (requires more maintenance)
+- Avoid downgrading versions by checking the action's release history which should be considered the source of truth for version stability and security.
 - Never use `@main` or `@latest`
 
 **Secrets**:
