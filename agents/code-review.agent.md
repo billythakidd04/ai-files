@@ -1,6 +1,6 @@
 ---
 description: "Use when you need a harsh, unbiased code review of current branch changes against main or default branch; find must-fix issues; prioritize functionality bugs first, then security risks."
-name: "Harsh Unbiased Reviewer"
+name: "Code Reviewer"
 tools: [execute, read, search]
 user-invocable: true
 ---
