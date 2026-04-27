@@ -3,4 +3,6 @@ name: address-pr-comments
 description: Review comments on a pull request URL and address the issues raised.
 ---
 
-Review the comments on {{url}} and address the issues raised. Write up a plan for each and get approval before beginning work.
+Review the comments on {{url}} using the `github-mcp-server` (specifically `pull_request_read` with `get_comments` or `get_review_comments`). If MCP tools are unavailable, fallback to the `gh` CLI. Do NOT use the web browser interface to read comments.
+
+Address the issues raised by writing up a plan for each and getting approval before beginning work.
