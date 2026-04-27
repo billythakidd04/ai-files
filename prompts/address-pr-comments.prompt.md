@@ -1,5 +1,5 @@
 ---
-name: Address Pull Request Comments
+name: address-pr-comments
 description: Review comments on a pull request URL and address the issues raised.
 ---
 

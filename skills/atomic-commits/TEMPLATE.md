@@ -1,4 +1,4 @@
 <Title>
-{ticket_id}
+#{ticket_id}
 
 <Body>

@@ -1,0 +1,1 @@
+/Users/bill/workspace/dot-files/ai-dot-files/prompts/run-all-skills.prompt.md
