@@ -36,3 +36,39 @@ if [ -d "$JB_BASE" ]; then
     echo "Symlinks updated for JetBrains IDE: $jb_name"
   done
 fi
+
+# Antigravity & Gemini CLI (Antigravity Environment)
+DEST_GEMINI_GLOBAL_WORKFLOWS="$HOME/.gemini/antigravity/global_workflows"
+DEST_GEMINI_COMMANDS="$HOME/.gemini/commands"
+
+mkdir -p "$DEST_GEMINI_GLOBAL_WORKFLOWS" "$DEST_GEMINI_COMMANDS"
+
+for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
+  [ -e "$prompt_file" ] || continue
+  
+  filename=$(basename "$prompt_file")
+  base_name="${filename%.prompt.md}"
+  
+  echo "Processing Antigravity command: $base_name..."
+  
+  # Global Symlink (.md extension for general Antigravity use)
+  ln -sfn "$prompt_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$base_name.md"
+  
+  # Extract description from YAML frontmatter
+  description=$(grep -m 1 "^description:" "$prompt_file" | sed 's/^description: //')
+  if [ -z "$description" ]; then
+    description="Run the $base_name workflow"
+  fi
+  
+  # TOML command for Gemini CLI
+  # Escape backslashes first, then double quotes, then replace newlines with literal \n
+  prompt_content=$(cat "$prompt_file" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/$/\\n/g' | tr -d '\n')
+  
+  cat <<EOF > "$DEST_GEMINI_COMMANDS/$base_name.toml"
+prompt = "$prompt_content"
+description = "$description"
+EOF
+  echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$base_name.toml"
+done
+
+echo "🎉 Setup complete! You can now use the prompts globally."
