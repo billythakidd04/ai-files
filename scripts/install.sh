@@ -49,7 +49,7 @@ for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
   filename=$(basename "$prompt_file")
   base_name="${filename%.prompt.md}"
   
-  echo "Processing Antigravity command: $base_name..."
+  echo "Processing Antigravity prompt: $base_name..."
   
   # Global Symlink (.md extension for general Antigravity use)
   ln -sfn "$prompt_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$base_name.md"
@@ -69,6 +69,36 @@ prompt = "$prompt_content"
 description = "$description"
 EOF
   echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$base_name.toml"
+done
+
+# Skills setup for Antigravity & Gemini CLI
+for skill_dir in "$SOURCE/skills/"*/; do
+  skill_dir="${skill_dir%/}"
+  [ -d "$skill_dir" ] || continue
+  skill_file="$skill_dir/SKILL.md"
+  [ -f "$skill_file" ] || continue
+  
+  skill_name=$(basename "$skill_dir")
+  
+  echo "Processing Antigravity skill: $skill_name..."
+  
+  # Global Symlink
+  ln -sfn "$skill_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$skill_name.md"
+  
+  # Extract description from YAML frontmatter
+  description=$(grep -m 1 "^description:" "$skill_file" | sed 's/^description: //')
+  if [ -z "$description" ]; then
+    description="Run the $skill_name skill"
+  fi
+  
+  # TOML command for Gemini CLI
+  prompt_content=$(cat "$skill_file" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/$/\\n/g' | tr -d '\n')
+  
+  cat <<EOF > "$DEST_GEMINI_COMMANDS/$skill_name.toml"
+prompt = "$prompt_content"
+description = "$description"
+EOF
+  echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$skill_name.toml"
 done
 
 echo "🎉 Setup complete! You can now use the prompts globally."
