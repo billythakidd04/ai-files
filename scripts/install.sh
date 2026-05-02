@@ -43,13 +43,14 @@ DEST_GEMINI_COMMANDS="$HOME/.gemini/commands"
 
 mkdir -p "$DEST_GEMINI_GLOBAL_WORKFLOWS" "$DEST_GEMINI_COMMANDS"
 
+# Process Prompts
 for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
   [ -e "$prompt_file" ] || continue
   
   filename=$(basename "$prompt_file")
   base_name="${filename%.prompt.md}"
   
-  echo "Processing Antigravity prompt: $base_name..."
+  echo "Processing Antigravity command (prompt): $base_name..."
   
   # Global Symlink (.md extension for general Antigravity use)
   ln -sfn "$prompt_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$base_name.md"
@@ -61,7 +62,6 @@ for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
   fi
   
   # TOML command for Gemini CLI
-  # Escape backslashes first, then double quotes, then replace newlines with literal \n
   prompt_content=$(cat "$prompt_file" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/$/\\n/g' | tr -d '\n')
   
   cat <<EOF > "$DEST_GEMINI_COMMANDS/$base_name.toml"
@@ -71,16 +71,14 @@ EOF
   echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$base_name.toml"
 done
 
-# Skills setup for Antigravity & Gemini CLI
+# Process Skills
 for skill_dir in "$SOURCE/skills/"*/; do
-  skill_dir="${skill_dir%/}"
   [ -d "$skill_dir" ] || continue
-  skill_file="$skill_dir/SKILL.md"
-  [ -f "$skill_file" ] || continue
-  
   skill_name=$(basename "$skill_dir")
+  skill_file="$skill_dir/SKILL.md"
+  [ -e "$skill_file" ] || continue
   
-  echo "Processing Antigravity skill: $skill_name..."
+  echo "Processing Antigravity command (skill): $skill_name..."
   
   # Global Symlink
   ln -sfn "$skill_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$skill_name.md"
@@ -88,7 +86,7 @@ for skill_dir in "$SOURCE/skills/"*/; do
   # Extract description from YAML frontmatter
   description=$(grep -m 1 "^description:" "$skill_file" | sed 's/^description: //')
   if [ -z "$description" ]; then
-    description="Run the $skill_name skill"
+    description="Activate the $skill_name skill"
   fi
   
   # TOML command for Gemini CLI
@@ -101,4 +99,4 @@ EOF
   echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$skill_name.toml"
 done
 
-echo "🎉 Setup complete! You can now use the prompts globally."
+echo "🎉 Setup complete! You can now use the prompts and skills globally."

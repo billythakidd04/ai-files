@@ -61,7 +61,10 @@ The `run-all-skills` prompt is a prime example of how prompts and skills work to
 ## ⚡ Skills List
 
 - **`atomic-commits`**: Enforces atomic changes and conventional git history.
-- **`code-reviewer`**: Performs rigorous logic and security audits.
+- **`code-reviewer`**: Performs rigorous logic and security audits (converted from agent).
+- **`code-review-fixer`**: Automatically applies fixes based on code review findings (converted from agent).
+- **`context7-expert`**: Advanced documentation-powered guidance for any library/framework (converted from agent).
+- **`github-actions-expert`**: Specialist in secure and efficient CI/CD workflows (converted from agent).
 - **`doc-writer`**: Automatically updates documentation to reflect code changes.
 - **`pr-generator`**: Automates descriptive pull request creation.
 - **`security-analyst`**: Provides security audits and vulnerability scanning.
