@@ -59,6 +59,9 @@ for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
   description=$(grep -m 1 "^description:" "$prompt_file" | sed 's/^description: //')
   if [ -z "$description" ]; then
     description="Run the $base_name workflow"
+  else
+    # Strip leading/trailing quotes and escape internal quotes for TOML
+    description=$(echo "$description" | sed 's/^"//;s/"$//' | sed 's/"/\\"/g')
   fi
   
   # TOML command for Gemini CLI
@@ -87,6 +90,9 @@ for skill_dir in "$SOURCE/skills/"*/; do
   description=$(grep -m 1 "^description:" "$skill_file" | sed 's/^description: //')
   if [ -z "$description" ]; then
     description="Activate the $skill_name skill"
+  else
+    # Strip leading/trailing quotes and escape internal quotes for TOML
+    description=$(echo "$description" | sed 's/^"//;s/"$//' | sed 's/"/\\"/g')
   fi
   
   # TOML command for Gemini CLI
