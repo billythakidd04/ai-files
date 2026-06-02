@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Resolve repository root from this script's location.
 SOURCE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# If ai-dot-files is a submodule inside dot-files, the sibling wp-ai-files repo may exist.
 WP_SOURCE="$(cd "$SOURCE/.." && pwd)/wp-ai-files"
 COPILOT_HOME="$HOME/.copilot"
 CLAUDE_HOME="$HOME/.claude"
@@ -11,130 +9,99 @@ VSCODE_USER="$HOME/Library/Application Support/Code/User"
 
 shopt -s nullglob
 
-symlink_dir() {
-  local src="$1"
-  local dest="$2"
+SKIP_DIRS=""
+
+# Ensure a destination directory exists, prompting to create if not.
+# Returns 1 if the directory should be skipped.
+ensure_dir() {
+  local dir="$1"
+  [ -d "$dir" ] && return 0
+  case "$SKIP_DIRS" in
+    *"|$dir|"*) return 1 ;;
+  esac
+  printf "Directory '%s' does not exist. Create it? (y/n) " "$dir"
+  read -r answer </dev/tty
+  case "$answer" in
+    y|Y) mkdir -p "$dir" ;;
+    *) SKIP_DIRS="$SKIP_DIRS|$dir|"; return 1 ;;
+  esac
+}
+
+# Symlink all items from src into dest, prompting to create dest if needed.
+symlink_into() {
+  local src="$1" dest="$2"
   [ -d "$src" ] || return 0
-  mkdir -p "$dest"
+  ensure_dir "$dest" || return 0
   for f in "$src"/*; do
     [ -e "$f" ] || continue
     ln -sfn "$f" "$dest/"
   done
 }
 
-# GitHub Copilot CLI
-mkdir -p "$COPILOT_HOME/prompts" "$COPILOT_HOME/agents" "$COPILOT_HOME/skills"
-symlink_dir "$SOURCE/prompts" "$COPILOT_HOME/prompts"
-symlink_dir "$SOURCE/agents"  "$COPILOT_HOME/agents"
-symlink_dir "$SOURCE/skills"  "$COPILOT_HOME/skills"
-# WebPros-specific skills (only present on work machines)
-symlink_dir "$WP_SOURCE/skills" "$COPILOT_HOME/skills"
-echo "Symlinks updated for Copilot CLI."
+# Symlink skills, agents, and prompts from a source root into a tool base dir.
+install_source() {
+  local src="$1" base="$2"
+  symlink_into "$src/skills"  "$base/skills"
+  symlink_into "$src/agents"  "$base/agents"
+  symlink_into "$src/prompts" "$base/prompts"
+}
 
-# Claude Code
-mkdir -p "$CLAUDE_HOME/agents" "$CLAUDE_HOME/skills" "$CLAUDE_HOME/prompts"
-symlink_dir "$SOURCE/agents"  "$CLAUDE_HOME/agents"
-symlink_dir "$SOURCE/skills"  "$CLAUDE_HOME/skills"
-symlink_dir "$SOURCE/prompts" "$CLAUDE_HOME/prompts"
-# WebPros-specific skills (only present on work machines)
-symlink_dir "$WP_SOURCE/skills"  "$CLAUDE_HOME/skills"
-symlink_dir "$WP_SOURCE/agents"  "$CLAUDE_HOME/agents"
-symlink_dir "$WP_SOURCE/prompts" "$CLAUDE_HOME/prompts"
-echo "Symlinks updated for Claude Code."
+# Build list of tool base directories.
+TOOL_BASES=("$COPILOT_HOME" "$CLAUDE_HOME" "$VSCODE_USER")
 
-# VS Code (user-level - available in all workspaces)
-mkdir -p "$VSCODE_USER/prompts" "$VSCODE_USER/agents" "$VSCODE_USER/skills"
-symlink_dir "$SOURCE/prompts" "$VSCODE_USER/prompts"
-symlink_dir "$SOURCE/agents"  "$VSCODE_USER/agents"
-symlink_dir "$SOURCE/skills"  "$VSCODE_USER/skills"
-symlink_dir "$WP_SOURCE/skills"  "$VSCODE_USER/skills"
-symlink_dir "$WP_SOURCE/agents"  "$VSCODE_USER/agents"
-symlink_dir "$WP_SOURCE/prompts" "$VSCODE_USER/prompts"
-echo "Symlinks updated for VS Code."
-
-# JetBrains IDEs (macOS path)
 JB_BASE="$HOME/Library/Application Support/JetBrains"
 if [ -d "$JB_BASE" ]; then
   for jb_dir in "$JB_BASE"/*/; do
-    JB_TARGET="${jb_dir}plugins/github-copilot"
-    mkdir -p "$JB_TARGET/prompts" "$JB_TARGET/agents" "$JB_TARGET/skills"
-    symlink_dir "$SOURCE/prompts" "$JB_TARGET/prompts"
-    symlink_dir "$SOURCE/agents"  "$JB_TARGET/agents"
-    symlink_dir "$SOURCE/skills"  "$JB_TARGET/skills"
-    symlink_dir "$WP_SOURCE/skills"  "$JB_TARGET/skills"
-    symlink_dir "$WP_SOURCE/agents"  "$JB_TARGET/agents"
-    symlink_dir "$WP_SOURCE/prompts" "$JB_TARGET/prompts"
-    jb_name=$(basename "$jb_dir")
-    echo "Symlinks updated for JetBrains IDE: $jb_name"
+    TOOL_BASES+=("${jb_dir}plugins/github-copilot")
   done
 fi
 
-# Antigravity & Gemini CLI (Antigravity Environment)
-DEST_GEMINI_GLOBAL_WORKFLOWS="$HOME/.gemini/antigravity/global_workflows"
-DEST_GEMINI_COMMANDS="$HOME/.gemini/commands"
+for base in "${TOOL_BASES[@]}"; do
+  install_source "$SOURCE"    "$base"
+  install_source "$WP_SOURCE" "$base"
+  echo "Symlinks updated: $base"
+done
 
-mkdir -p "$DEST_GEMINI_GLOBAL_WORKFLOWS" "$DEST_GEMINI_COMMANDS"
+# Antigravity & Gemini CLI
+install_antigravity() {
+  local workflows="$HOME/.gemini/antigravity/global_workflows"
+  local commands="$HOME/.gemini/commands"
 
-# Process Prompts
-for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
-  [ -e "$prompt_file" ] || continue
-  
-  filename=$(basename "$prompt_file")
-  base_name="${filename%.prompt.md}"
-  
-  echo "Processing Antigravity command (prompt): $base_name..."
-  
-  # Global Symlink (.md extension for general Antigravity use)
-  ln -sfn "$prompt_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$base_name.md"
-  
-  # Extract description from YAML frontmatter
-  description=$(grep -m 1 "^description:" "$prompt_file" | sed 's/^description: //')
-  if [ -z "$description" ]; then
-    description="Run the $base_name workflow"
-  else
-    # Strip leading/trailing quotes and escape internal quotes for TOML
-    description=$(echo "$description" | sed 's/^"//;s/"$//' | sed 's/"/\\"/g')
-  fi
-  
-  # TOML command for Gemini CLI
-  prompt_content=$(cat "$prompt_file" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/$/\\n/g' | tr -d '\n')
-  
-  cat <<EOF > "$DEST_GEMINI_COMMANDS/$base_name.toml"
+  ensure_dir "$workflows" || return 0
+  ensure_dir "$commands"  || return 0
+
+  write_toml() {
+    local file="$1" name="$2" default_desc="$3" out_dir="$4" link_dir="$5"
+    local description prompt_content
+    ln -sfn "$file" "$link_dir/$name.md"
+    description=$(grep -m 1 "^description:" "$file" | sed 's/^description: //;s/^"//;s/"$//;s/"/\\"/g')
+    [ -z "$description" ] && description="$default_desc"
+    prompt_content=$(sed 's/\\/\\\\/g;s/"/\\"/g;s/$/\\n/g' "$file" | tr -d '\n')
+    cat <<EOF > "$out_dir/$name.toml"
 prompt = "$prompt_content"
 description = "$description"
 EOF
-  echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$base_name.toml"
-done
+  }
 
-# Process Skills
-for skill_dir in "$SOURCE/skills/"*/; do
-  [ -d "$skill_dir" ] || continue
-  skill_name=$(basename "$skill_dir")
-  skill_file="$skill_dir/SKILL.md"
-  [ -e "$skill_file" ] || continue
-  
-  echo "Processing Antigravity command (skill): $skill_name..."
-  
-  # Global Symlink
-  ln -sfn "$skill_file" "$DEST_GEMINI_GLOBAL_WORKFLOWS/$skill_name.md"
-  
-  # Extract description from YAML frontmatter
-  description=$(grep -m 1 "^description:" "$skill_file" | sed 's/^description: //')
-  if [ -z "$description" ]; then
-    description="Activate the $skill_name skill"
-  else
-    # Strip leading/trailing quotes and escape internal quotes for TOML
-    description=$(echo "$description" | sed 's/^"//;s/"$//' | sed 's/"/\\"/g')
-  fi
-  
-  # TOML command for Gemini CLI
-  prompt_content=$(cat "$skill_file" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/$/\\n/g' | tr -d '\n')
-  
-  cat <<EOF > "$DEST_GEMINI_COMMANDS/$skill_name.toml"
-prompt = "$prompt_content"
-description = "$description"
-EOF
-  echo "✅ Created Gemini CLI TOML command: $DEST_GEMINI_COMMANDS/$skill_name.toml"
-done
+  for prompt_file in "$SOURCE/prompts/"*.prompt.md; do
+    [ -e "$prompt_file" ] || continue
+    local filename="${prompt_file##*/}"
+    local base_name="${filename%.prompt.md}"
+    write_toml "$prompt_file" "$base_name" "Run the $base_name workflow" "$commands" "$workflows"
+  done
 
-echo "🎉 Setup complete! You can now use the prompts and skills globally."
+  for skill_dir in "$SOURCE/skills/"*/; do
+    [ -d "$skill_dir" ] || continue
+    local skill_name="${skill_dir%/}"
+    skill_name="${skill_name##*/}"
+    local skill_file="$skill_dir/SKILL.md"
+    [ -e "$skill_file" ] || continue
+    write_toml "$skill_file" "$skill_name" "Activate the $skill_name skill" "$commands" "$workflows"
+  done
+
+  echo "Symlinks updated: Antigravity / Gemini CLI"
+}
+
+install_antigravity
+
+echo "Setup complete."
