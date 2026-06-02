@@ -3,35 +3,67 @@ set -euo pipefail
 
 # Resolve repository root from this script's location.
 SOURCE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# If ai-dot-files is a submodule inside dot-files, the sibling wp-ai-files repo may exist.
+WP_SOURCE="$(cd "$SOURCE/.." && pwd)/wp-ai-files"
 COPILOT_HOME="$HOME/.copilot"
+CLAUDE_HOME="$HOME/.claude"
 VSCODE_USER="$HOME/Library/Application Support/Code/User"
 
 shopt -s nullglob
 
+symlink_dir() {
+  local src="$1"
+  local dest="$2"
+  [ -d "$src" ] || return 0
+  mkdir -p "$dest"
+  for f in "$src"/*; do
+    [ -e "$f" ] || continue
+    ln -sfn "$f" "$dest/"
+  done
+}
+
 # GitHub Copilot CLI
 mkdir -p "$COPILOT_HOME/prompts" "$COPILOT_HOME/agents" "$COPILOT_HOME/skills"
-for f in "$SOURCE/prompts/"*; do ln -sfn "$f" "$COPILOT_HOME/prompts/"; done
-for f in "$SOURCE/agents/"*; do ln -sfn "$f" "$COPILOT_HOME/agents/"; done
-for f in "$SOURCE/skills/"*; do ln -sfn "$f" "$COPILOT_HOME/skills/"; done
+symlink_dir "$SOURCE/prompts" "$COPILOT_HOME/prompts"
+symlink_dir "$SOURCE/agents"  "$COPILOT_HOME/agents"
+symlink_dir "$SOURCE/skills"  "$COPILOT_HOME/skills"
+# WebPros-specific skills (only present on work machines)
+symlink_dir "$WP_SOURCE/skills" "$COPILOT_HOME/skills"
 echo "Symlinks updated for Copilot CLI."
 
+# Claude Code
+mkdir -p "$CLAUDE_HOME/agents" "$CLAUDE_HOME/skills" "$CLAUDE_HOME/prompts"
+symlink_dir "$SOURCE/agents"  "$CLAUDE_HOME/agents"
+symlink_dir "$SOURCE/skills"  "$CLAUDE_HOME/skills"
+symlink_dir "$SOURCE/prompts" "$CLAUDE_HOME/prompts"
+# WebPros-specific skills (only present on work machines)
+symlink_dir "$WP_SOURCE/skills"  "$CLAUDE_HOME/skills"
+symlink_dir "$WP_SOURCE/agents"  "$CLAUDE_HOME/agents"
+symlink_dir "$WP_SOURCE/prompts" "$CLAUDE_HOME/prompts"
+echo "Symlinks updated for Claude Code."
+
 # VS Code (user-level - available in all workspaces)
-mkdir -p "$VSCODE_USER/prompts" "$VSCODE_USER/agents"
-for f in "$SOURCE/prompts/"*; do ln -sfn "$f" "$VSCODE_USER/prompts/"; done
-for f in "$SOURCE/agents/"*; do ln -sfn "$f" "$VSCODE_USER/agents/"; done
+mkdir -p "$VSCODE_USER/prompts" "$VSCODE_USER/agents" "$VSCODE_USER/skills"
+symlink_dir "$SOURCE/prompts" "$VSCODE_USER/prompts"
+symlink_dir "$SOURCE/agents"  "$VSCODE_USER/agents"
+symlink_dir "$SOURCE/skills"  "$VSCODE_USER/skills"
+symlink_dir "$WP_SOURCE/skills"  "$VSCODE_USER/skills"
+symlink_dir "$WP_SOURCE/agents"  "$VSCODE_USER/agents"
+symlink_dir "$WP_SOURCE/prompts" "$VSCODE_USER/prompts"
 echo "Symlinks updated for VS Code."
 
 # JetBrains IDEs (macOS path)
 JB_BASE="$HOME/Library/Application Support/JetBrains"
 if [ -d "$JB_BASE" ]; then
-  # Loop through all JetBrains IDE versions (e.g., PhpStorm2024.1)
   for jb_dir in "$JB_BASE"/*/; do
     JB_TARGET="${jb_dir}plugins/github-copilot"
     mkdir -p "$JB_TARGET/prompts" "$JB_TARGET/agents" "$JB_TARGET/skills"
-    for f in "$SOURCE/prompts/"*; do ln -sfn "$f" "$JB_TARGET/prompts/"; done
-    for f in "$SOURCE/agents/"*; do ln -sfn "$f" "$JB_TARGET/agents/"; done
-    for f in "$SOURCE/skills/"*; do ln -sfn "$f" "$JB_TARGET/skills/"; done
-    
+    symlink_dir "$SOURCE/prompts" "$JB_TARGET/prompts"
+    symlink_dir "$SOURCE/agents"  "$JB_TARGET/agents"
+    symlink_dir "$SOURCE/skills"  "$JB_TARGET/skills"
+    symlink_dir "$WP_SOURCE/skills"  "$JB_TARGET/skills"
+    symlink_dir "$WP_SOURCE/agents"  "$JB_TARGET/agents"
+    symlink_dir "$WP_SOURCE/prompts" "$JB_TARGET/prompts"
     jb_name=$(basename "$jb_dir")
     echo "Symlinks updated for JetBrains IDE: $jb_name"
   done
