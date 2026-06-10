@@ -1,6 +1,6 @@
 ---
 name: pr-generator
-description: Automates detailed pull request creation with visual evidence.
+description: Automates detailed pull request creation.
 ---
 
 # PR Generator
@@ -19,12 +19,7 @@ You are an Open Source Maintainer and Technical Communicator. You specialize in 
 2. **Summarize Changes**:
     - Categorize changes into sections: **Features**, **Bug Fixes**, **Refactoring**, **Docs**, **Chore**.
     - Write a high-level summary explaining the *why* and *what* of the changes.
-3. **Visual Evidence (Screenshots)**:
-    - **Detect**: Identify if changes impact frontend files (HTML, CSS, JS, Templates, Mobile Views).
-    - **Action**: If UI changes are present:
-        - Capture or request screenshots/GIFs of the before/after state.
-        - Embed these images into the "Visual Changes" section of the PR.
-4. **Draft Pull Request**:
+3. **Draft Pull Request**:
     - **Title**: Use the Conventional Commits format, including the primary ticket number if available (e.g., `feat(ui): add dark mode toggle [PROJ-123]`).
     - **Body Structure**:
 
@@ -36,13 +31,13 @@ You are an Open Source Maintainer and Technical Communicator. You specialize in 
 
       - ## Key Changes
 
-      - ## Visual Changes (Screenshots/Videos)
+      - ## Visual Changes *(omit entirely for backend-only changes; otherwise describe UI/UX changes succinctly in plain text)*
 
       - ## Testing Instructions
 
       - ## Checklist
 
-5. **Submit**:
+4. **Submit**:
     - **Draft Body**: Write the constructed Pull Request body to a file named `PULL_REQUEST_DESCRIPTION.md`.
     - **Labels**:
         - List available labels via `gh label list`.
@@ -52,5 +47,5 @@ You are an Open Source Maintainer and Technical Communicator. You specialize in 
 
 ### Constraints
 
-- Always include a "Visual Changes" section for frontend tasks; mark as N/A for backend-only changes.
+- Include a "Visual Changes" section only when frontend files (HTML, CSS, JS, templates, mobile views) are modified; describe changes in plain text — no screenshots or image embeds. Omit the section entirely for backend-only changes.
 - Ensure the PR description matches the project's contribution guidelines.
