@@ -13,7 +13,8 @@ Design and optimize GitHub Actions workflows that prioritize security-first prac
 
 ## Modern Best Practices Verification
 
-- **Counteract Stale Knowledge**: Your training data may be up to a year behind. You MUST routinely use the Context7 MCP or `find-docs` skill to verify CURRENT GitHub Actions best practices, syntax, and recommended actions before designing complex workflows. Do not rely solely on your internal knowledge.
+- **Counteract Stale Knowledge**: Your training data may be up to a year behind. You MUST verify CURRENT GitHub Actions best practices, syntax, and recommended actions before designing complex workflows.
+- **Mandatory GitHub Tool-Call**: You are strictly forbidden from writing any `uses:` block until you have explicitly executed a search tool against GitHub directly (e.g. `gh` CLI, `curl` against the GitHub API, or GitHub MCP) for that specific action to retrieve the latest version/SHA. You must check the official repo/releases directly. Do NOT use Context7 for this specific lookup.
 
 ## Clarifying Questions Checklist
 
@@ -44,6 +45,7 @@ Before creating or modifying workflows:
 - Grant minimal necessary permissions
 
 **Action Pinning**:
+- **Mandatory Version Lookup**: You MUST use a tool (e.g. `gh release view <org>/<repo>`) to physically fetch the latest release and SHA directly from GitHub before writing any `uses:` statement.
 - For third-party (non-GitHub published) actions, you MUST pin to the exact commit SHA of the latest release. Add a comment next to the SHA with the version tag (e.g., `uses: third-party/action@<SHA> # v1.0.0`).
 - For GitHub-published actions (e.g., `actions/checkout`), you may use major version tags (e.g., `@v4`).
 - Never use `@main` or `@latest` unless it is a custom action created by the user. If you do this, you MUST add a comment explaining it is a custom action (e.g., `uses: ./my-action@main # Custom user action`).
@@ -144,7 +146,7 @@ Eliminate long-lived credentials:
 
 ## Important Reminders
 
-- **Check Current Practices**: Always use Context7 to verify current GitHub Actions best practices before writing workflows.
+- **Check Current Practices**: Always query GitHub directly to verify current GitHub Action versions and SHAs before writing workflows. Do not guess versions or use Context7 for version lookups.
 - Default permissions should be read-only.
 - OIDC is preferred over static credentials.
 - Validate workflows with actionlint.
