@@ -59,9 +59,16 @@ fi
 if ask_and_run "Gemini (Antigravity)"; then
   DEST_GEMINI_CONFIG="$HOME/.gemini/config"
   mkdir -p "$DEST_GEMINI_CONFIG"
+  mkdir -p "$HOME/.gemini/antigravity-cli"
   ln -sfn "$SOURCE/../.config/gemini/skills.json" "$DEST_GEMINI_CONFIG/skills.json"
   ln -sfn "$SOURCE/../.config/gemini/GEMINI.md" "$HOME/.gemini/GEMINI.md"
-  echo "✅ Symlinks updated for Gemini (Antigravity) skills."
+  ln -sfn "$SOURCE/../.config/gemini/settings.json" "$HOME/.gemini/settings.json"
+  ln -sfn "$SOURCE/../.config/gemini/antigravity-cli/settings.json" "$HOME/.gemini/antigravity-cli/settings.json"
+  
+  # Generate IDE permissions policy from global settings
+  "$SOURCE/scripts/sync_permissions.sh" "$SOURCE/../.config/gemini/settings.json" "$HOME/.gemini/policies/cli-sync.toml"
+  
+  echo "✅ Symlinks updated for Gemini (Antigravity) skills and settings."
   echo
 fi
 
