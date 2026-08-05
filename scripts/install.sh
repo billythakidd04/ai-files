@@ -60,6 +60,7 @@ if ask_and_run "Gemini (Antigravity)"; then
   DEST_GEMINI_CONFIG="$HOME/.gemini/config"
   mkdir -p "$DEST_GEMINI_CONFIG"
   ln -sfn "$SOURCE/../.config/gemini/skills.json" "$DEST_GEMINI_CONFIG/skills.json"
+  ln -sfn "$SOURCE/../.config/gemini/GEMINI.md" "$HOME/.gemini/GEMINI.md"
   echo "✅ Symlinks updated for Gemini (Antigravity) skills."
   echo
 fi
