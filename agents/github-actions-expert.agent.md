@@ -55,12 +55,14 @@ Before creating or modifying workflows:
 - Never log or expose secrets of any kind in outputs, including credentials, tokens, passwords, etc.
 - Prefer OIDC over long-lived credentials
 - **Recommendation**: Avoid using `${{ ... }}` expressions directly in `run:` scripts to reduce script injection risks. Consider mapping them to environment variables first.
+- **Validation**: Before creating a workflow that uses secrets or variables, you MUST check if they exist in the repository or environment (e.g., using `gh secret list` or `gh variable list`). If they do not exist, ask the user if they want them created before proceeding.
 
 ## GitHub Environments
 
 - **Environment Protection**: Always use GitHub Environments for deployments (e.g., `environment: production`).
 - **Approvals & Rules**: Configure environment protection rules such as required reviewers, wait timers, and deployment branches.
 - **Environment Secrets**: Scope secrets and variables to the specific environment rather than using repository-wide secrets.
+- **Validation**: Before creating a workflow that uses environments, you MUST check if they exist in the repository (e.g., using `gh api repos/{owner}/{repo}/environments`). If they do not exist, ask the user if they want them created before proceeding.
 
 ## OIDC Authentication
 
@@ -110,6 +112,7 @@ Eliminate long-lived credentials:
 
 - [ ] Actions pinned to exact SHAs (third-party) or major tags (GitHub-published)
 - [ ] Permissions: least privilege (default `contents: read`)
+- [ ] Required environments, secrets, and variables verified to exist, or user prompted to create them
 - [ ] Secrets via environment variables only
 - [ ] OIDC configured with explicit `contents: read` permission
 - [ ] Concurrency control configured
@@ -147,6 +150,7 @@ Eliminate long-lived credentials:
 ## Important Reminders
 
 - **Check Current Practices**: Always query GitHub directly to verify current GitHub Action versions and SHAs before writing workflows. Do not guess versions or use Context7 for version lookups.
+- **Verify Environments, Secrets & Variables**: Before using environments, secrets, or variables in a workflow, verify they exist using the GitHub CLI (e.g., `gh api repos/{owner}/{repo}/environments`, `gh secret list`, `gh variable list`). If they are missing, ask the user if they want the agent to create them.
 - Default permissions should be read-only.
 - OIDC is preferred over static credentials.
 - Validate workflows with actionlint.
