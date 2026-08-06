@@ -66,7 +66,7 @@ if ask_and_run "Gemini (Antigravity)"; then
   ln -sfn "$SOURCE/../.config/gemini/antigravity-cli/settings.json" "$HOME/.gemini/antigravity-cli/settings.json"
   
   # Generate IDE permissions policy from global settings
-  "$SOURCE/scripts/sync_permissions.sh" "$SOURCE/../.config/gemini/settings.json" "$HOME/.gemini/policies/cli-sync.toml"
+  "$SOURCE/scripts/sync_permissions.sh" "$SOURCE/../.config/gemini/settings.json"
   
   echo "✅ Symlinks updated for Gemini (Antigravity) skills and settings."
   echo
