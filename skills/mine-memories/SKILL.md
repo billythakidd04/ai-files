@@ -1,6 +1,7 @@
 ---
 name: mine-memories
-description: MANDATORY: Run this skill after every commit, group of commits, or push. Also use when the user asks to "mine memories", "update mempalace", or whenever a major milestone/decision is reached. This ensures the AI's long-term memory is updated with workspace context, architectural decisions, and conversation history.
+description: >
+  MANDATORY: Run this skill after every commit, group of commits, or push. Also use when the user asks to "mine memories", "update mempalace", or whenever a major milestone/decision is reached. This ensures the AI's long-term memory is updated with workspace context, architectural decisions, and conversation history.
 ---
 
 # Mine Memories
@@ -13,8 +14,10 @@ You are a Digital Archivist and Memory Architect. Your goal is to ensure that ev
 
 1. **Workspace Mining**: Ingest the current state of the codebase, documentation (specifically `GEMINI.md` files), and project notes.
     - Command: `uv run mempalace mine .`
-2. **Conversation Mining**: Persist the insights from the current session and previous chat history in this workspace.
-    - Command: `uv run mempalace mine ~/.gemini/tmp/dot-files/chats/ --mode convos --wing dot-files`
+2. **Conversation Mining**: Persist the insights from the current session's transcript logs.
+    - Locate your current conversation's transcript logs dynamically using your system context (e.g., `<appDataDir>/brain/<conversation-id>/.system_generated/logs/`).
+    - Use the mempalace CLI to look up the available wings and select the best matching option for the current workspace.
+    - Command: `uv run mempalace mine <path-to-transcript> --mode convos --wing <workspace-name>`
 3. **Global Memory Mining**: Ensure global preferences and cross-project facts are filed.
     - Command: `uv run mempalace mine ~/.gemini/GEMINI.md`
 4. **Antigravity Context Mining**: Capture broader AI system context (brains, knowledge, prompting).
