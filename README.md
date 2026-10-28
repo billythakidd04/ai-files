@@ -66,6 +66,8 @@ The `run-all-skills` prompt is a prime example of how prompts and skills work to
 - **`context7-expert`**: Advanced documentation-powered guidance for any library/framework (converted from agent).
 - **`github-actions-expert`**: Specialist in secure and efficient CI/CD workflows (converted from agent).
 - **`doc-writer`**: Automatically updates documentation to reflect code changes.
+- **`fix-verification`**: Reviews expectations and verifies outcomes after task completion.
+- **`mine-memories`**: Ingests accepted plans, session continuity, decisions, and logs into MemPalace.
 - **`pr-generator`**: Automates descriptive pull request creation.
 - **`security-analyst`**: Provides security audits and vulnerability scanning.
 - **`test-guardian`**: Ensures new changes are accompanied by robust unit and integration tests.
