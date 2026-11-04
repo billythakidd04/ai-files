@@ -60,6 +60,7 @@ The `run-all-skills` prompt is a prime example of how prompts and skills work to
 
 ## ⚡ Skills List
 
+- **`adversarial-review`**: Conducts adversarial code reviews using two debating agents to verify changes and align on fixes.
 - **`atomic-commits`**: Enforces atomic changes and conventional git history.
 - **`code-reviewer`**: Performs rigorous logic and security audits (converted from agent).
 - **`code-review-fixer`**: Automatically applies fixes based on code review findings (converted from agent).
